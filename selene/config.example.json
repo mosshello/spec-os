@@ -1,0 +1,5 @@
+{
+  "remote_base_url": "https://vxmdsnibzutqgdesfzgg.supabase.co",
+  "remote_token": "<same token as SELENE_REMOTE_TOKEN in Supabase Edge Functions Secrets>",
+  "project_id": "proj-your-project"
+}

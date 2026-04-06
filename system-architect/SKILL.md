@@ -1,24 +1,73 @@
 ---
 name: system-architect
-description: 基于 project-context 的全局视角进行技术蓝图和 API 契约设计。不再盲目触发全库扫描。
+description: 生成机器可执行 Spec。负责边界、目标文件、验证计划和任务拆分，不负责实现代码。
 ---
-# System Architect (系统架构师)
 
-## Core Purpose (核心目标)
-此技能专职负责跨模块的技术方案设计（Specification）。它**绝对禁止**编写实现代码。它必须严重依赖 `project-context` 提供的大局观来进行安全的设计。
+# System Architect
 
-## Workflow (工作流)
+## Responsibilities
 
-1. **获取唯一真相源 (Fetch Project Context)**：
-   - 在开始任何设计前，必须确保系统已执行了 `project-context` (READ 模式)。
-   - 你需要查阅其生成的 `.ai/project.md`。不仅看功能，**必须看 ADR(决策记录)** 和 **全局规约(Conventions)**，确保你的新设计不会违背祖宗之法。
-2. **按需呼叫局部侦察 (Optional Deep Recon)**：
-   - 如果你要改的模块非常深，单靠 `project.md` 摘要看不出具体有哪些函数和参数，此时你才可以指派 `repo-map-generator` 去**定向钻取**该指定子目录的 AST（禁止无脑扫根目录）。
-3. **设计规约与契约 (Design Contracts)**：
-   - 拟定数据 Schema、UI 组件 Props 接口或后端路由。
-   - 进行**全栈影响面分析**（如果改了 A，B 会不会崩？）。
-4. **生成蓝图清单 (Output Spec Document)**：
-   - 将设计书作为实体文件写入 `.ai/specs/[feature]-spec.md`。
-   - 必须在文件末尾提供一份**精确的目标编辑文件清单 (Target File List)**。
-5. **移交执行链 (Handoff)**：
-   - 把控制权丢给 `task-coder`，并告诉它你的 Spec 在哪。
+- 读取 `.ai/project.md`
+- 必要时定向调用 `repo-map-generator`
+- 生成 Spec
+- 定义 `target_files`
+- 定义 `verification_plan`
+- 定义 `exit_criteria`
+- 定义 `split_tasks`
+
+## Inputs
+
+- `.ai/project.md`
+- 用户目标
+- 当前代码基线信息（如可用）
+
+如果 `.ai/project.md` 不存在，先执行 `project-context` INIT。
+
+## Output
+
+输出路径：
+
+`/.ai/specs/<feature-slug>-spec.md`
+
+Spec 至少包含：
+
+- `spec_id`
+- `goal`
+- `intent`
+- `status`
+- `target_files`
+- `out_of_scope`
+- `verification_plan`
+- `exit_criteria`
+- `split_tasks`
+- `open_questions`
+
+缺少 `target_files` 或 `verification_plan` 的 Spec 无效。
+
+## Rules
+
+- 禁止直接改业务代码
+- 禁止扫描整个仓库
+- 禁止输出模糊任务书
+- 多人或多 AI 协作时，优先拆分不重叠的 write set
+
+## Verification Planning
+
+按改动类型补全验证计划：
+
+- schema / type: `lint` `typecheck` 契约测试
+- backend: 单元测试 集成测试
+- UI: 组件测试 E2E 视觉回归
+- MCP / tooling: schema smoke timeout/retry
+
+没有对应能力时，标记为 `not_available`。
+
+## Blocked
+
+以下情况直接阻塞：
+
+- 用户目标不清晰
+- 模块边界无法确定
+- 目标文件清单无法收敛
+- 需要大规模重构但缺少 ADR
+- 破坏性迁移没有回滚策略

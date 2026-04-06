@@ -1,0 +1,13 @@
+{
+  "run_id": "run-YYYYMMDD-001",
+  "project_id": "proj-<name>",
+  "project_name": "<project display name>",
+  "goal": "<user goal>",
+  "intent": "schema_change",
+  "requires_spec": true,
+  "requires_verification": true,
+  "base_commit": "",
+  "branch": "selene/run-YYYYMMDD-001",
+  "actor_id": "<editor-or-agent-id>",
+  "editor": "<cursor|gemini|claude|other>"
+}

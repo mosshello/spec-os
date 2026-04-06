@@ -1,0 +1,16 @@
+{
+  "run_id": "run-YYYYMMDD-001",
+  "spec_id": "spec-<feature>-v1",
+  "status": "success",
+  "changed_files": [],
+  "verification_summary": [
+    {
+      "name": "typecheck",
+      "status": "passed"
+    }
+  ],
+  "retry_count": 0,
+  "failure_type": null,
+  "human_handoff": false,
+  "notes": ""
+}

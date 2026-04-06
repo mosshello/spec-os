@@ -1,0 +1,19 @@
+{
+  "task_id": "task-<feature>-<slice>",
+  "spec_id": "spec-<feature>-v1",
+  "owner": null,
+  "status": "open",
+  "base_commit": "",
+  "branch": "",
+  "target_files": [
+    "path/to/file.ext"
+  ],
+  "verification_plan": [
+    {
+      "name": "typecheck",
+      "command": "pnpm typecheck",
+      "required": true
+    }
+  ],
+  "result": null
+}

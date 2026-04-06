@@ -1,0 +1,13 @@
+{
+  "remote_status": "pending",
+  "remote_run_id": null,
+  "project_synced": false,
+  "run_started": false,
+  "spec_synced": false,
+  "tasks_synced": false,
+  "synced_event_count": 0,
+  "run_finished": false,
+  "last_sync_at": null,
+  "retry_count": 0,
+  "last_error": null
+}

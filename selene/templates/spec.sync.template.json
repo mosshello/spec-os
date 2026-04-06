@@ -1,0 +1,23 @@
+{
+  "spec_id": "spec-<feature>-v1",
+  "project_id": "proj-<name>",
+  "run_id": "run-YYYYMMDD-001",
+  "goal": "<user goal>",
+  "intent": "schema_change",
+  "status": "draft",
+  "target_files": [
+    "path/to/file.ext"
+  ],
+  "verification_plan": [
+    {
+      "name": "typecheck",
+      "command": "pnpm typecheck",
+      "required": true
+    }
+  ],
+  "exit_criteria": [
+    "All required verification commands pass"
+  ],
+  "split_tasks": [],
+  "content_md": ""
+}
