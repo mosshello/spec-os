@@ -1,82 +1,83 @@
 ---
 name: project-context
-description: 维护 `.ai/project.md`。负责初始化、读取、局部更新和状态门禁。
+description: "Use when a task needs repository truth: initialize, read, or update `.ai/project.md`, verify key paths, or detect drift in long-lived project context."
 ---
 
 # Project Context
 
 ## Responsibilities
 
-- 初始化 `.ai/project.md`
-- 读取 `.ai/project.md`
-- 校验关键路径是否存在
-- 维护 `status`
-- 局部更新模块状态、ADR 和变更记录
+- Initialize `.ai/project.md`
+- Read `.ai/project.md`
+- Verify recorded paths still exist
+- Maintain project status and last verification time
+- Update module records, ADRs, and change notes
 
-## Modes
+## Use When
 
-### INIT
+- A project has no `.ai/project.md`
+- A task is starting and needs repository context
+- A task has finished and the repository record must be updated
+- A user wants to inspect the current project state
 
-用于首次创建 `.ai/project.md`。
+## Do Not Use When
 
-### READ
+- The task only needs a feature Spec
+- The task only needs code changes
+- The task only needs targeted repo exploration
 
-用于任务开始前读取项目上下文。
+## Repo Truth
 
-### UPDATE
+`project-context` is the long-lived repository record.
 
-用于任务完成后局部更新项目上下文。
+It should describe stable facts:
+
+- current stack
+- key modules
+- critical entry points
+- ADRs
+- external contracts
+
+It should not become a chat log or a speculative roadmap.
 
 ## Inputs
 
-- 项目根目录
-- 关键入口文件或目录
-- 当前任务结果（UPDATE 时）
+- Repository root
+- Known entry files or directories
+- Task result, when running UPDATE
 
 ## Output
 
-输出文件：
+Write:
 
 `/.ai/project.md`
 
-至少包含：
+At minimum include:
 
 - `status`
 - `last-verified`
-- 技术栈
-- 关键模块
-- ADR
-- 外部契约
+- stack summary
+- key modules
+- ADRs
+- external contracts
 
 ## Status Rules
 
-- AI 只能写入 `status: draft`
-- `status: approved` 只能由人修改
-- 已批准文档只允许局部追加，不允许整体重写
+- AI may only write `status: draft`
+- `status: approved` is reserved for human review
+- Approved files may be extended, not rewritten wholesale
 
-## INIT Rules
+## Rules
 
-- 只扫描根目录和一层子目录
-- 写入前先校验关键路径存在
-- 生成初版后保持 `draft`
-
-## READ Rules
-
-- 读取 `.ai/project.md`
-- 如果文件不存在，转入 INIT
-- 如果 `status` 为 `draft`，显式提示风险
-
-## UPDATE Rules
-
-- 只做局部更新
-- 更新前抽样校验记录路径仍存在
-- 大量路径失效时返回 `[DRIFT_DETECTED]`
-- 更新模块状态、ADR 或 changelog 时不得覆盖无关内容
+- Scan shallowly during INIT
+- Verify key paths before writing them
+- Prefer local updates over full rewrites
+- Return `[DRIFT_DETECTED]` when recorded paths no longer match the repo
 
 ## Blocked
 
-以下情况直接阻塞：
+Return a blocked state when:
 
-- 关键路径无法验证
-- `.ai/project.md` 结构损坏
-- 需要整体重写已批准文档
+- key paths cannot be verified
+- `.ai/project.md` is structurally invalid
+- an approved file would need a full rewrite

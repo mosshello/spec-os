@@ -8,11 +8,16 @@ target_files:
 out_of_scope:
   - "Anything not listed in target_files"
 verification_plan:
-  - name: lint
-    command: "pnpm lint"
-    required: true
-  - name: typecheck
-    command: "pnpm typecheck"
+  # Fill this section with project-specific commands.
+  # Choose commands based on the detected stack.
+  # Examples:
+  # Node / TypeScript: pnpm lint / pnpm typecheck / pnpm test
+  # Python: ruff check . / mypy . / pytest
+  # Go: gofmt -l . / go vet ./... / go test ./...
+  # Rust: cargo check / cargo clippy --all-targets --all-features -- -D warnings / cargo test
+  # Java: ./mvnw test / ./gradlew test
+  - name: <verification-name>
+    command: "<project-specific command>"
     required: true
 exit_criteria:
   - "All required verification commands pass"
@@ -43,4 +48,4 @@ Describe the feature or change in 2-5 concise bullet points.
 
 ## Verification Notes
 
-- Explain why the listed verification commands are sufficient.
+- Explain why these commands fit the detected stack and this change.

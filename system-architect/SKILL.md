@@ -1,35 +1,58 @@
 ---
 name: system-architect
-description: 生成机器可执行 Spec。负责边界、目标文件、验证计划和任务拆分，不负责实现代码。
+description: "Use when a task needs a machine-readable Spec: define scope, target files, verification, task split, or technical contracts before any implementation starts."
 ---
 
 # System Architect
 
 ## Responsibilities
 
-- 读取 `.ai/project.md`
-- 必要时定向调用 `repo-map-generator`
-- 生成 Spec
-- 定义 `target_files`
-- 定义 `verification_plan`
-- 定义 `exit_criteria`
-- 定义 `split_tasks`
+- Read `.ai/project.md`
+- Narrow the implementation boundary
+- Generate a machine-readable Spec
+- Define `target_files`
+- Define `verification_plan`
+- Define `exit_criteria`
+- Define `split_tasks`
+
+## Use When
+
+- A new feature needs a Spec
+- A bug fix affects more than one file or layer
+- A task needs explicit verification before coding
+- Multi-actor work needs a write-set split
+
+## Do Not Use When
+
+- The task is simple, bounded, and safe to implement directly
+- The task already has a valid Spec
+- The task only needs code implementation
+- The task only needs a narrow repo map lookup
 
 ## Inputs
 
 - `.ai/project.md`
-- 用户目标
-- 当前代码基线信息（如可用）
+- User goal
+- Current codebase facts, if available
 
-如果 `.ai/project.md` 不存在，先执行 `project-context` INIT。
+If `.ai/project.md` does not exist, run `project-context` INIT first.
 
 ## Output
 
-输出路径：
+Write:
 
 `/.ai/specs/<feature-slug>-spec.md`
 
-Spec 至少包含：
+For `deep` tasks, the Spec is a review artifact, not an implicit go-ahead to code.
+
+After writing the Spec:
+
+- stop implementation flow
+- summarize the proposed boundary and verification plan
+- explicitly ask the user to confirm the Spec
+- do not invoke or imply `task-coder` until the user approves
+
+A valid Spec must include:
 
 - `spec_id`
 - `goal`
@@ -42,32 +65,34 @@ Spec 至少包含：
 - `split_tasks`
 - `open_questions`
 
-缺少 `target_files` 或 `verification_plan` 的 Spec 无效。
+## Verification Planning
+
+Choose commands that match the detected stack. Do not default to frontend or Node.js commands.
+
+Examples:
+
+- Node / TypeScript: lint, typecheck, tests
+- Python: lint, type checks, tests
+- Go: format check, vet, tests
+- Rust: check, clippy, tests
+- Java: compile, tests
+
+Mark unavailable steps as `not_available`.
 
 ## Rules
 
-- 禁止直接改业务代码
-- 禁止扫描整个仓库
-- 禁止输出模糊任务书
-- 多人或多 AI 协作时，优先拆分不重叠的 write set
-
-## Verification Planning
-
-按改动类型补全验证计划：
-
-- schema / type: `lint` `typecheck` 契约测试
-- backend: 单元测试 集成测试
-- UI: 组件测试 E2E 视觉回归
-- MCP / tooling: schema smoke timeout/retry
-
-没有对应能力时，标记为 `not_available`。
+- Do not edit implementation code
+- Do not scan the whole repository
+- Do not output vague scope
+- Prefer non-overlapping write sets for parallel work
+- Do not slow down simple direct-edit tasks by generating unnecessary Specs
+- Do not continue into coding after writing a `deep` Spec unless the user explicitly approves it
 
 ## Blocked
 
-以下情况直接阻塞：
+Return a blocked state when:
 
-- 用户目标不清晰
-- 模块边界无法确定
-- 目标文件清单无法收敛
-- 需要大规模重构但缺少 ADR
-- 破坏性迁移没有回滚策略
+- the goal is ambiguous
+- the boundary cannot be narrowed
+- `target_files` cannot be made explicit
+- a destructive migration has no rollback plan
